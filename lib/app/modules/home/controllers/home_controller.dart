@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:taskapp/app/data/models/task.dart';
@@ -16,6 +17,11 @@ class HomeController extends GetxController {
   final deleting = false.obs;
   final chipIndex = 0.obs;
   final task = Rx<Task?>(null);
+  // Membuat progress indikator
+  // List Task yang akan dikerjakan
+  final doingTodos = <dynamic>[].obs;
+  // List Task yang sudah dikerjakan
+  final doneTodos = <dynamic>[].obs;
   @override
   void onInit() {
     super.onInit();
@@ -33,6 +39,21 @@ class HomeController extends GetxController {
     super.onClose();
     editController.dispose();
     
+  }
+
+  void changeTodos(List<dynamic> select) {
+    doingTodos.clear();
+    doneTodos.clear();
+    for (var i = 0; i < select.length; i++) {
+      var todo = select[i];
+      var status = todo['done'];
+      // Kita buat kondisi jika status == true maka akan dimasukan ke dalam list doneTodos jika tidak akan dimasukan ke dalam list doingTodos 
+      if (status == true) {
+        doneTodos.add(todo);
+      } else {
+        doingTodos.add(todo);
+      }
+    }
   }
 
   void changeChipIndex(int value) {
@@ -77,4 +98,29 @@ class HomeController extends GetxController {
   bool containeTodo(List todos, String title) {
     return todos.any((element) => element['title'] == title);
   }
-}
+
+  bool addTodo(String editController) {
+    var todo = {'title': editController, 'done' : false};
+    // Melakukan pengecekan apakan ada task yang sama yang berada di doingTodos
+    if(doingTodos.any((element) => mapEquals<String,dynamic>(todo, element))) {
+      return false;
+    }
+    // Melakukan pengecekan apakan ada task yang sama yang berada di doneTodos
+    var doneTodo = {'title': editController, 'done' : true};
+    if(doneTodos.any((element) => mapEquals<String,dynamic>(doneTodo, element))) {
+      return false;
+    }
+    doingTodos.add(todo);
+    return true;
+
+  }
+
+  void updateTodos() {
+    var newTodos = <Map<String, dynamic>>[];
+    newTodos.addAll([...doingTodos, ...doneTodos]);
+    var newTask = task.value!.copyWith(todos: newTodos);
+    int oldIdx = tasks.indexOf(task.value);
+    tasks[oldIdx] = newTask;
+    tasks.refresh();
+  }
+ }

@@ -79,10 +79,7 @@ class HomeView extends GetView<HomeController> {
             ),
           );
         },
-        onAccept: (Task task) {
-          controller.deleteTask(task);
-          EasyLoading.showSuccess('Delete Berhasil');
-        },
+        onAcceptWithDetails: (details) => controller.deleteTask(details.data),
       ),
     );
   }

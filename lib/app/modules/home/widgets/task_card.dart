@@ -2,13 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:taskapp/app/core/utils/extensions.dart';
 import 'package:taskapp/app/data/models/task.dart';
-import 'package:taskapp/app/modules/detail/views/detail_view.dart';
+// import 'package:taskapp/app/modules/detail/views/detail_view.dart';
 import 'package:taskapp/app/modules/home/controllers/home_controller.dart';
 import 'package:step_progress_indicator/step_progress_indicator.dart';
 import 'package:taskapp/app/routes/app_pages.dart';
 
 class TaskCard extends StatelessWidget {
   final homeCtrl = Get.find<HomeController>();
+  // Membuat class Task
   final Task task;
   TaskCard({super.key, required this.task});
 
@@ -18,7 +19,9 @@ class TaskCard extends StatelessWidget {
     var squareWidth = Get.width - 12.0.wp;
     return GestureDetector(
       onTap: ()  {
+        //* Mengubah task yang di sentuh oleh user untuk di komsumsi di bagian detail user
         homeCtrl.changeTask(task);
+        homeCtrl.changeTodos(task.todos ?? []);
         Get.toNamed(Routes.DETAIL);
       },
       child: Container(
